@@ -1,9 +1,11 @@
-import Head from 'next/head'
+import SideBar from "../components/SideBar";
 
 export default function Home() {
   return (
-    <div>
-
-    </div>
+      <div className="bg-black overflow-hidden h-screen">
+          <main>
+              <SideBar/>
+          </main>
+      </div>
   )
 }
