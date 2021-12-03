@@ -4,9 +4,16 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {},
+    colors: {
+      grey: {
+        back: "#1F1D36"
+      }
+    }
   },
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar-hide')
+  ],
 }
