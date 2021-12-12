@@ -2,15 +2,29 @@ import {SiHomebridge} from "react-icons/si";
 import {IoSearchCircleSharp} from "react-icons/io5";
 import {MdLibraryMusic} from "react-icons/md";
 import {BsFillBookmarkHeartFill, BsFillPlusCircleFill} from "react-icons/bs";
-import {signOut} from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 import {GoSignOut} from "react-icons/go";
+import useSpotify from "../hooks/useSpotify";
+import {useEffect, useState} from "react";
+import {useRecoilState} from "recoil";
+import {playlistIdState} from "../atoms/playlistAtoms";
 
 export default SideBar => {
-    // const {data: session, status} = useSession();
-    // console.log(session);
+    const spotifyApi = useSpotify();
+    const [playlists, setPlaylist] = useState([]);
+    const {data: session, status} = useSession()
+    const [playlistId, setPlaylistId] = useRecoilState(playlistIdState);
+    useEffect(() => {
+        if (spotifyApi.getAccessToken()) {
+            spotifyApi.getUserPlaylists().then(data => {
+                setPlaylist(data.body.items);
+            })
+        }
+    }, [session])
     return (
         <div
-            className="text-gray-500 p-5 text-sm border-r border-gray-900 h-screen overflow-y-scroll rounded-3xl m-3 scrollbar-hide bg-grey-back">
+            className="text-gray-500 p-5 text-sm border-r border-gray-900 h-screen rounded-3xl overflow-y-scroll m-3 scrollbar-hide mr-1
+            text-xs lg:text-sm sm:max-w-[12rem] lg:max-w-[15rem] hidden md:inline-block">
             <div className="space-y-4">
                 <button
                     className="flex items-center space-x-3 text-[#892CDC] border-2 border-[#52057B] rounded-3xl p-3 hover:text-[#BC6FF1]">
@@ -46,13 +60,26 @@ export default SideBar => {
 
                 <hr className="border-t-[0.1px] border-gray-900"/>
 
+                <div className="space-y-4 overflow-y-scroll scrollbar-hide">
+                    {playlists.map((playlist) => (
+                        <p
+                            key={playlist.id}
+                            className="cursor-pointer hover:text-white"
+                            onClick={() => setPlaylistId(playlist.id)}
+                        >
+                            {playlist.name}
+                        </p>
+                    ))}
+                </div>
+
+                <hr className="border-t-[0.1px] border-gray-900"/>
+
                 <button
-                    className="flex items-center space-x-3 text-[#F0134D] border-2 border-[#FF4848] rounded-3xl p-3 hover:text-[#FF0000]"
+                    className="flex items-center space-x-3 text-[#F0134D] border-2 border-[#FF4848] p-3 hover:text-[#FF0000] rounded-3xl"
                     onClick={() => signOut()}>
                     <GoSignOut className="h-5 w-5"/>
                     <p className="">Home</p>
                 </button>
-
 
             </div>
         </div>
